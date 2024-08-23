@@ -143,7 +143,7 @@ class CarneController
     private function retornaDadosCarne(array $parcelas) : array
     {
         $total = 0;
-        $valor_entrada = 0;
+        $valor_entrada = null;
         foreach($parcelas as $parcela) {
             $total += $parcela->valor;
 
@@ -152,16 +152,20 @@ class CarneController
             }
         }
 
-        return [
-            "total"=>round($total, 2, PHP_ROUND_HALF_DOWN),
-            "valor_entrada"=>$valor_entrada,
-            "parcelas"=>array_map(fn($p) => [
-                "data_vencimento"=>$p->data_vencimento,
-                "valor"=>$p->valor,
-                "numero"=>$p->numero,
-                "entrada"=>$p->entrada
-            ], $parcelas)
-        ];
+        $retorno = [ "total"=>round($total, 2, PHP_ROUND_HALF_DOWN) ];
+
+        if (! empty($valor_entrada)) {
+            $retorno["valor_entrada"] = $valor_entrada;
+        }
+
+        $retorno["parcelas"] = array_map(fn($p) => [
+            "data_vencimento"=>$p->data_vencimento,
+            "valor"=>$p->valor,
+            "numero"=>$p->numero,
+            "entrada"=>$p->entrada
+        ], $parcelas);
+
+        return $retorno;
     }
 
     /**
